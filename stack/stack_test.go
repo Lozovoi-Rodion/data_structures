@@ -12,19 +12,20 @@ func TestStack(t *testing.T) {
 	stack.Push("b")
 	stack.Push("c")
 
-	el, ok := stack.Pop()
-	assert.Equal(t, el, "c")
-	assert.Equal(t, ok, true)
+	tests := []struct {
+		el     string
+		result bool
+	}{
+		{"c", true},
+		{"b", true},
+		{"a", true},
+		{"", false},
+	}
 
-	el, ok = stack.Pop()
-	assert.Equal(t, el, "b")
-	assert.Equal(t, ok, true)
-
-	el, ok = stack.Pop()
-	assert.Equal(t, el, "a")
-	assert.Equal(t, ok, true)
-
-	el, ok = stack.Pop()
-	assert.Equal(t, el, "")
-	assert.Equal(t, ok, false)
+	for _, tc := range tests {
+		tc := tc
+		el, ok := stack.Pop()
+		assert.Equal(t, el, tc.el)
+		assert.Equal(t, ok, tc.result)
+	}
 }
