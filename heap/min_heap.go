@@ -5,90 +5,92 @@ import "fmt"
 type minheap struct {
 	heapArray []int
 	size      int
-	maxsize   int
+	maxSize   int
 }
 
-func (m *minheap) String() string {
-	return fmt.Sprintf("Heap size is %d.\n Heap maxSize is %d.\n Heap elements: %v \n", m.size, m.maxsize, m.heapArray)
+func NewMinHeap(maxSize int) *minheap {
+	return &minheap{maxSize: maxSize}
 }
 
-func NewMinHeap(maxsize int) *minheap {
-	return &minheap{maxsize: maxsize}
+func (h *minheap) String() string {
+	return fmt.Sprintf("Heap size is %d.\n Heap maxSize is %d.\n Heap elements: %v \n", h.size, h.maxSize, h.heapArray)
 }
 
-func (m *minheap) isLeaf(index int) bool {
-	if index >= (m.size/2) && index <= m.size {
-		return true
-	}
-	return false
+func (h *minheap) isLeaf(idx int) bool {
+	return idx >= h.size/2 && idx <= h.size
 }
 
-func (m *minheap) parent(index int) int {
-	return (index - 1) / 2
+func (h *minheap) parent(idx int) int {
+	return (idx - 1) / 2
 }
 
-func (m *minheap) leftChild(index int) int {
-	return 2*index + 1
+func (h *minheap) leftChild(idx int) int {
+	return idx*2 + 1
 }
 
-func (m *minheap) rightChild(index int) int {
-	return 2*index + 2
+func (h *minheap) rightChild(idx int) int {
+	return idx*2 + 2
 }
 
-func (m *minheap) Insert(item int) error {
-	if m.size >= m.maxsize {
-		return fmt.Errorf("heap is full")
-	}
-	m.heapArray = append(m.heapArray, item)
-	m.size++
-	m.upHeapify(m.size - 1)
-	return nil
+func (h *minheap) swap(childIdx, parentIdx int) {
+	h.heapArray[childIdx], h.heapArray[parentIdx] = h.heapArray[parentIdx], h.heapArray[childIdx]
 }
 
-func (m *minheap) Remove() int {
-	top := m.heapArray[0]
-	m.heapArray[0] = m.heapArray[m.size-1]
-	m.heapArray = m.heapArray[:m.size-1]
-	m.size--
-	m.downHeapify(0)
-	return top
-}
-
-func (m *minheap) swap(first, second int) {
-	m.heapArray[first], m.heapArray[second] = m.heapArray[second], m.heapArray[first]
-}
-
-func (m *minheap) upHeapify(index int) {
-	for m.heapArray[index] < m.heapArray[m.parent(index)] {
-		m.swap(index, m.parent(index))
-		index = m.parent(index)
+func (h *minheap) upHeapify(idx int) {
+	for h.heapArray[idx] < h.heapArray[h.parent(idx)] {
+		h.swap(idx, h.parent(idx))
+		idx = h.parent(idx)
 	}
 }
 
-func (m *minheap) downHeapify(current int) {
-	if m.isLeaf(current) {
+func (h *minheap) downHeapify(currentIdx int) {
+	if h.isLeaf(currentIdx) {
 		return
 	}
 
-	smallest := current
-	leftChildIndex := m.leftChild(current)
-	rightChildIndex := m.rightChild(current)
+	smallestIdx := currentIdx
+	leftChildIdx := h.leftChild(currentIdx)
+	rightChildIdx := h.rightChild(currentIdx)
 
-	if leftChildIndex < m.size && m.heapArray[leftChildIndex] < m.heapArray[smallest] {
-		smallest = leftChildIndex
-	}
-	if rightChildIndex < m.size && m.heapArray[rightChildIndex] < m.heapArray[smallest] {
-		smallest = rightChildIndex
+	if leftChildIdx < h.size && h.heapArray[smallestIdx] > h.heapArray[leftChildIdx] {
+		smallestIdx = leftChildIdx
 	}
 
-	if smallest != current {
-		m.swap(current, smallest)
-		m.downHeapify(smallest)
+	if rightChildIdx < h.size && h.heapArray[smallestIdx] > h.heapArray[rightChildIdx] {
+		smallestIdx = rightChildIdx
+	}
+
+	if smallestIdx != currentIdx {
+		h.swap(smallestIdx, currentIdx)
+		h.downHeapify(smallestIdx)
 	}
 }
 
-func (m *minheap) BuildMinHeap() {
-	for index := m.size/2 - 1; index >= 0; index-- {
-		m.downHeapify(index)
+func (h *minheap) Get() int {
+	return h.heapArray[0]
+}
+
+func (h *minheap) Insert(el int) error {
+	if h.size >= h.maxSize {
+		return fmt.Errorf("heap is full")
+	}
+	h.heapArray = append(h.heapArray, el)
+	h.size++
+	h.upHeapify(h.size - 1)
+	return nil
+}
+
+func (h *minheap) Remove() int {
+	root := h.heapArray[0]
+	h.heapArray[0] = h.heapArray[h.size-1]
+	h.heapArray = h.heapArray[:h.size-1]
+	h.size--
+	h.downHeapify(0)
+	return root
+}
+
+func (h *minheap) BuildMinHeap() {
+	for index := (h.size / 2) - 1; index >= 0; index-- {
+		h.downHeapify(index)
 	}
 }

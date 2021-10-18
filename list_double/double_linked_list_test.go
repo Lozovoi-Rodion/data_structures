@@ -38,7 +38,7 @@ func TestDoubleLinkedList_PushBack(t *testing.T) {
 	assert.Equal(t, n1, list.Back())
 	assert.Equal(t, list.Front(), n1)
 
-	list.PushBack( val2)
+	list.PushBack(val2)
 	assert.Equal(t, list.Len(), 2)
 	assert.NotEqual(t, list.Front(), list.Back())
 	assert.Equal(t, list.Front(), list.Back().Prev)
@@ -70,19 +70,35 @@ func TestDoubleLinkedList_MoveToFront(t *testing.T) {
 }
 
 func TestDoubleLinkedList_Remove(t *testing.T) {
-	list := NewDoubleLinkedList()
+	t.Run("removing", func(t *testing.T) {
+		list := NewDoubleLinkedList()
 
-	n1 := list.PushBack(1)
-	n2 := list.PushBack(2)
-	n3 := list.PushBack(3)
+		n1 := list.PushBack(1)
+		n2 := list.PushBack(2)
+		n3 := list.PushBack(3)
 
-	assert.Equal(t, list.Len(), 3)
-	assert.Equal(t, n1.Next, n2)
-	assert.Equal(t, n3.Prev, n2)
+		assert.Equal(t, list.Len(), 3)
+		assert.Equal(t, n1.Next, n2)
+		assert.Equal(t, n3.Prev, n2)
 
-	list.Remove(n2)
+		list.Remove(n2)
 
-	assert.Equal(t, list.Len(), 2)
-	assert.Equal(t, n1.Next, n3)
-	assert.Equal(t, n3.Prev, n1)
+		assert.Equal(t, list.Len(), 2)
+		assert.Equal(t, n1.Next, n3)
+		assert.Equal(t, n3.Prev, n1)
+	})
+	t.Run("when only one item present", func(t *testing.T) {
+		list := NewDoubleLinkedList()
+
+		list.PushFront(1)
+		n1 := list.Front()
+
+		assert.Equal(t, list.Len(), 1)
+
+		list.Remove(n1)
+
+		assert.Equal(t, list.Len(), 0)
+		assert.Nil(t, list.Front())
+		assert.Nil(t, list.Back())
+	})
 }

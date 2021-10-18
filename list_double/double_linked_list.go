@@ -77,8 +77,13 @@ func (l *doubleLinkedList) PushBack(value interface{}) *Node {
 
 func (l *doubleLinkedList) Remove(n *Node) {
 	if l.head == n {
-		n.Next.Prev = nil
-		l.head = n.Next
+		if l.len == 1 {
+			l.head = nil
+			l.tail = nil
+		} else {
+			n.Next.Prev = nil
+			l.head = n.Next
+		}
 	} else if l.tail == n {
 		n.Prev.Next = nil
 		l.tail = n.Prev
@@ -92,6 +97,9 @@ func (l *doubleLinkedList) Remove(n *Node) {
 }
 
 func (l *doubleLinkedList) MoveToFront(n *Node) {
+	if n == l.head || l.len == 1 && n == l.tail {
+		return
+	}
 	n.Prev.Next = n.Next
 	n.Next.Prev = n.Prev
 
